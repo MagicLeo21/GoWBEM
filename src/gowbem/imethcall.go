@@ -131,9 +131,9 @@ func (conn *WBEMConnection) doPostMethodCall(method string, content []byte) ([]b
 	req.Header.Add("Content-Type", "application/xml; charset=\"utf-8\"")
 	req.Header.Add("Host", fmt.Sprintf("%s:%d", conn.host, conn.port))
 	req.Header.Add("Accept-Encoding", "identity")
-	req.Header.Add(HttpHdrOperation, "MethodCall")
-	req.Header.Add(HttpHdrMethod, method)
-	req.Header.Add(HttpHdrObject, conn.namespace)
+	req.Header[HttpHdrOperation] = append(req.Header[HttpHdrOperation], "MethodCall")
+	req.Header[HttpHdrMethod] = append(req.Header[HttpHdrMethod], method)
+	req.Header[HttpHdrObject] = append(req.Header[HttpHdrObject], conn.namespace)
 	res, err := conn.httpc.Do(req)
 	if nil != err {
 		fmt.Println("Error ", err.Error())
