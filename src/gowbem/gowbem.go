@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -78,7 +79,9 @@ func NewWBEMConn(urlstr string, namespace string) (*WBEMConnection, error) {
 	if "" == conn.namespace {
 		conn.namespace = DefaultNamespace
 	}
-	conn.httpc = &http.Client{}
+	conn.httpc = &http.Client{
+		Timeout: time.Minute,
+	}
 	if SchemeHttps == conn.scheme {
 		conn.httpc.Transport = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
