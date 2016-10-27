@@ -49,7 +49,6 @@ func (cli *Client) GetClass(className string) ([]byte, error) {
 	}
 	class, err := cli.conn.GetClass(&iClassName, true, true, false, nil)
 	if nil != err {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 	res, _ := json.MarshalIndent(&class, "", "    ")
@@ -70,7 +69,6 @@ func (cli *Client) GetInstance(instanceName string) ([]byte, error) {
 	}
 	instance, err := cli.conn.GetInstance(&iInstanceName, false, nil)
 	if nil != err {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 	res, _ := json.MarshalIndent(&instance, "", "    ")
@@ -83,7 +81,6 @@ func (cli *Client) EnumerateInstances(className string) ([]byte, error) {
 	}
 	namedInstance, err := cli.conn.EnumerateInstances(&iClassName, true, false, nil)
 	if nil != err {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 	res, _ := json.MarshalIndent(&namedInstance, "", "    ")
@@ -96,7 +93,6 @@ func (cli *Client) EnumerateInstanceNames(className string) ([]byte, error) {
 	}
 	instanceName, err := cli.conn.EnumerateInstanceNames(&iClassName)
 	if nil != err {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 	res, _ := json.MarshalIndent(&instanceName, "", "    ")
@@ -117,23 +113,25 @@ func main() {
 	fmt.Println("")
 
 	if 4 != len(os.Args) {
-		fmt.Println("Error  Invalid parameter(s)")
+		fmt.Println("Error: Invalid parameter(s)")
 		fmt.Println("---")
 		usage()
 		os.Exit(1)
 	}
 	cli := NewClient(os.Args[1], "")
 	if nil == cli {
-		fmt.Println("Error  Invalid URL")
+		fmt.Println("Error: Invalid URL")
 		os.Exit(1)
 	}
 	if nil == MethMap[os.Args[2]] {
-		fmt.Println("Error  Invalid action")
+		fmt.Println("Error: Invalid action")
 		os.Exit(1)
 	}
 	res, err := MethMap[os.Args[2]](cli, os.Args[3])
 	if nil == err {
 		fmt.Println(string(res))
+	} else {
+		fmt.Println("Error:", err.Error())
 	}
 	fmt.Println("")
 	os.Exit(0)

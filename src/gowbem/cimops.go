@@ -144,7 +144,7 @@ func (conn *WBEMConnection) GetClass(className *ClassName, localOnly bool, inclu
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -176,7 +176,7 @@ func (conn *WBEMConnection) GetInstance(instanceName *InstanceName, includeClass
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -198,7 +198,7 @@ func (conn *WBEMConnection) DeleteClass(className *ClassName) error {
 	iMethCall.appendParamVal("ClassName", className)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -220,7 +220,7 @@ func (conn *WBEMConnection) DeleteInstance(instanceName *InstanceName) error {
 	iMethCall.appendParamVal("InstanceName", instanceName)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -242,7 +242,7 @@ func (conn *WBEMConnection) CreateClass(newClass *Class) error {
 	iMethCall.appendParamVal("NewClass", newClass)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -264,7 +264,7 @@ func (conn *WBEMConnection) CreateInstance(newInstance *Instance) error {
 	iMethCall.appendParamVal("NewInstance", newInstance)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -286,7 +286,7 @@ func (conn *WBEMConnection) ModifyClass(modifiedClass *Class) error {
 	iMethCall.appendParamVal("ModifiedClass", modifiedClass)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -310,7 +310,7 @@ func (conn *WBEMConnection) ModifyInstance(modifiedInstance *ValueNamedInstance,
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -347,7 +347,7 @@ func (conn *WBEMConnection) EnumerateClasses(className *ClassName, deepInheritan
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -372,7 +372,7 @@ func (conn *WBEMConnection) EnumerateClassNames(className *ClassName, deepInheri
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -408,7 +408,7 @@ func (conn *WBEMConnection) EnumerateInstances(className *ClassName, deepInherit
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -430,7 +430,7 @@ func (conn *WBEMConnection) EnumerateInstanceNames(className *ClassName) ([]Inst
 	iMethCall.appendParamVal("ClassName", className)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -451,7 +451,7 @@ func (conn *WBEMConnection) ExecQuery(queryLanguage string, query string) (*Obje
 	iMethCall.appendParamVal("Query", query)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -504,7 +504,7 @@ func (conn *WBEMConnection) Associators(objectName *ObjectName, assocClass *Clas
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -543,7 +543,7 @@ func (conn *WBEMConnection) AssociatorNames(objectName *ObjectName, assocClass *
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -583,7 +583,7 @@ func (conn *WBEMConnection) References(objectName *ObjectName, resultClass *Clas
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -614,7 +614,7 @@ func (conn *WBEMConnection) ReferenceNames(objectName *ObjectName, assocClass *C
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -635,7 +635,7 @@ func (conn *WBEMConnection) GetProperty(instanceName *InstanceName, propertyName
 	iMethCall.appendParamVal("PropertyName", propertyName)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -667,7 +667,7 @@ func (conn *WBEMConnection) SetProperty(instanceName *InstanceName, propertyName
 	}
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -686,7 +686,7 @@ func (conn *WBEMConnection) GetQualifier(qualifierName string) (*QualifierDeclar
 	iMethCall.appendParamVal("QualifierName", qualifierName)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -708,7 +708,7 @@ func (conn *WBEMConnection) SetQualifier(qualifierDecl *QualifierDeclaration) er
 	iMethCall.appendParamVal("QualifierDeclaration", qualifierDecl)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -727,7 +727,7 @@ func (conn *WBEMConnection) DeleteQualifier(qualifierName string) error {
 	iMethCall.appendParamVal("QualifierName", qualifierName)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return conn.oops(ErrFailed)
+		return err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
@@ -744,7 +744,7 @@ func (conn *WBEMConnection) EnumerateQualifiers() ([]QualifierDeclaration, error
 	iMethCall.appendNamespace(conn.namespace)
 	iMethRes, err := conn.iMethodCall(iMethCall)
 	if nil != err {
-		return nil, conn.oops(ErrFailed)
+		return nil, err
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)

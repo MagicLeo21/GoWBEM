@@ -123,7 +123,6 @@ func (iMethCall *IMethodCall) appendParamVal(paramName string, param interface{}
 func (conn *WBEMConnection) doPostMethodCall(method string, content []byte) ([]byte, error) {
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s://%s:%d/%s", conn.scheme, conn.host, conn.port, DefaultRequestURI), bytes.NewReader(content))
 	if nil != err {
-		fmt.Println("Error ", err.Error())
 		return nil, err
 	}
 	req.SetBasicAuth(conn.username, conn.password)
@@ -136,7 +135,10 @@ func (conn *WBEMConnection) doPostMethodCall(method string, content []byte) ([]b
 	req.Header[HttpHdrObject] = append(req.Header[HttpHdrObject], conn.namespace)
 	res, err := conn.httpc.Do(req)
 	if nil != err {
-		fmt.Println("Error ", err.Error())
+		return nil, err
+	}
+	if 200 != res.StatusCode {
+		err = fmt.Errorf("HTTP_ERR - %d - %s", res.StatusCode, res.Status)
 		return nil, err
 	}
 	return ioutil.ReadAll(res.Body)

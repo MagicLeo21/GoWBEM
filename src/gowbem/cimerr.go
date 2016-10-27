@@ -167,7 +167,7 @@ type CIMErr struct {
 }
 
 func (err CIMErr) Error() string {
-	return fmt.Sprintf("Error  %v - %v - %v", err.ErrCode, err.ErrName, err.ErrDesc)
+	return fmt.Sprintf("%v - %v - %v", err.ErrCode, err.ErrName, err.ErrDesc)
 }
 
 func (conn *WBEMConnection) oops(err int) error {
