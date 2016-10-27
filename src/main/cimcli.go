@@ -33,6 +33,7 @@ type CliMeth func(*Client, string) ([]byte, error)
 var MethMap map[string]CliMeth = map[string]CliMeth{
 	"ei":  (*Client).EnumerateInstances,
 	"ein": (*Client).EnumerateInstanceNames,
+	"gc":  (*Client).GetClass,
 }
 
 func NewClient(url, namespace string) *Client {
@@ -52,26 +53,6 @@ func (cli *Client) GetClass(className string) ([]byte, error) {
 		return nil, err
 	}
 	res, _ := json.MarshalIndent(&class, "", "    ")
-	return res, nil
-}
-
-func (cli *Client) GetInstance(instanceName string) ([]byte, error) {
-	var iInstanceName gowbem.InstanceName = gowbem.InstanceName{
-		KeyBinding: []gowbem.KeyBinding{
-			gowbem.KeyBinding{
-				Name: "Name",
-				KeyValue: &gowbem.KeyValue{
-					Type:     "string",
-					KeyValue: instanceName,
-				},
-			},
-		},
-	}
-	instance, err := cli.conn.GetInstance(&iInstanceName, false, nil)
-	if nil != err {
-		return nil, err
-	}
-	res, _ := json.MarshalIndent(&instance, "", "    ")
 	return res, nil
 }
 
