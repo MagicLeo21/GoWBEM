@@ -50,9 +50,10 @@ type WBEMConnection struct {
 
 func NewWBEMConn(urlstr string, namespace string) (*WBEMConnection, error) {
 	res, err := url.Parse(urlstr)
-	if err != nil {
+	if nil != err {
 		return nil, err
 	}
+
 	var conn WBEMConnection
 	host := strings.Split(res.Host, ":")
 	for i, sub := range host {
@@ -63,8 +64,10 @@ func NewWBEMConn(urlstr string, namespace string) (*WBEMConnection, error) {
 		}
 	}
 	conn.scheme = strings.ToLower(res.Scheme)
-	conn.username = res.User.Username()
-	conn.password, _ = res.User.Password()
+	if nil != res.User {
+		conn.username = res.User.Username()
+		conn.password, _ = res.User.Password()
+	}
 	conn.namespace = namespace
 	if SchemeHttp != conn.scheme && SchemeHttps != conn.scheme {
 		conn.scheme = SchemeHttp
