@@ -176,9 +176,5 @@ func (conn *WBEMConnection) iMethodCall(call *IMethodCall) (*IMethodResponse, er
 	if nil == cim.Message || nil == cim.Message.SimpleRsp || nil == cim.Message.SimpleRsp.IMethodResponse {
 		return nil, conn.oops(ErrFailed)
 	}
-	if nil == cim.Message.SimpleRsp.IMethodResponse.Error &&
-		nil == cim.Message.SimpleRsp.IMethodResponse.IReturnValue {
-		return nil, conn.oops(ErrFailed)
-	}
 	return cim.Message.SimpleRsp.IMethodResponse, nil
 }

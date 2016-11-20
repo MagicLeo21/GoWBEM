@@ -150,6 +150,9 @@ func (conn *WBEMConnection) GetClass(className *ClassName, localOnly bool, inclu
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
 	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
+	}
 	return iMethRes.IReturnValue.Class, err
 }
 
@@ -181,6 +184,9 @@ func (conn *WBEMConnection) GetInstance(instanceName *InstanceName, includeClass
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
+	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
 	}
 	return iMethRes.IReturnValue.Instance, err
 }
@@ -353,6 +359,9 @@ func (conn *WBEMConnection) EnumerateClasses(className *ClassName, deepInheritan
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
 	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
+	}
 	return iMethRes.IReturnValue.Class, err
 }
 
@@ -377,6 +386,9 @@ func (conn *WBEMConnection) EnumerateClassNames(className *ClassName, deepInheri
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
+	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
 	}
 	return iMethRes.IReturnValue.Class, err
 }
@@ -414,6 +426,9 @@ func (conn *WBEMConnection) EnumerateInstances(className *ClassName, deepInherit
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
 	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
+	}
 	return iMethRes.IReturnValue.ValueNamedInstance, err
 }
 
@@ -436,6 +451,9 @@ func (conn *WBEMConnection) EnumerateInstanceNames(className *ClassName) ([]Inst
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
 	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
+	}
 	return iMethRes.IReturnValue.InstanceName, nil
 }
 
@@ -456,6 +474,9 @@ func (conn *WBEMConnection) ExecQuery(queryLanguage string, query string) (*Obje
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
+	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
 	}
 	var obj Object = Object{
 		ValueObject:              iMethRes.IReturnValue.ValueObject,
@@ -510,6 +531,9 @@ func (conn *WBEMConnection) Associators(objectName *ObjectName, assocClass *Clas
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
 	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
+	}
 	return iMethRes.IReturnValue.ValueObjectWithPath, nil
 }
 
@@ -548,6 +572,9 @@ func (conn *WBEMConnection) AssociatorNames(objectName *ObjectName, assocClass *
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
+	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
 	}
 	return iMethRes.IReturnValue.ObjectPath, nil
 }
@@ -589,6 +616,9 @@ func (conn *WBEMConnection) References(objectName *ObjectName, resultClass *Clas
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
 	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
+	}
 	return iMethRes.IReturnValue.ValueObjectWithPath, nil
 }
 
@@ -620,6 +650,9 @@ func (conn *WBEMConnection) ReferenceNames(objectName *ObjectName, assocClass *C
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
 	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
+	}
 	return iMethRes.IReturnValue.ObjectPath, nil
 }
 
@@ -640,6 +673,9 @@ func (conn *WBEMConnection) GetProperty(instanceName *InstanceName, propertyName
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
+	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
 	}
 	propVal := PropertyValue{
 		ValueArray:     iMethRes.IReturnValue.ValueArray,
@@ -691,6 +727,9 @@ func (conn *WBEMConnection) GetQualifier(qualifierName string) (*QualifierDeclar
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
+	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
 	}
 	if 0 == len(iMethRes.IReturnValue.QualifierDeclaration) {
 		return nil, nil
@@ -749,6 +788,9 @@ func (conn *WBEMConnection) EnumerateQualifiers() ([]QualifierDeclaration, error
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
 		return nil, conn.oops(i)
+	}
+	if nil == iMethRes.IReturnValue {
+		return nil, nil
 	}
 	return iMethRes.IReturnValue.QualifierDeclaration, nil
 }
