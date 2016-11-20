@@ -36,8 +36,8 @@ var MethMap map[string]CliMeth = map[string]CliMeth{
 	"gc":  (*Client).GetClass,
 }
 
-func NewClient(url, namespace string) *Client {
-	conn, err := gowbem.NewWBEMConn(url, namespace)
+func NewClient(url string) *Client {
+	conn, err := gowbem.NewWBEMConn(url)
 	if nil != err {
 		return nil
 	}
@@ -82,15 +82,14 @@ func (cli *Client) EnumerateInstanceNames(className string) ([]byte, error) {
 
 func usage() {
 	fmt.Println("Usage:")
-	fmt.Println("  ", os.Args[0], "<scheme>://[<username>[:<passwd>]@]<host>[:<port>] <act> <param>")
+	fmt.Println("  ", os.Args[0], "<scheme>://[<username>[:<passwd>]@]<host>[/<namespace>][:<port>] <act> <param>")
 	fmt.Println("Examples:")
-	fmt.Println("  ", os.Args[0], "http://USER:PASSWD@127.0.0.1 ei CIM_EthernetPort")
-	fmt.Println("  ", os.Args[0], "https://USER:PASSWD@127.0.0.1 ein CIM_EthernetPort")
+	fmt.Println("  ", os.Args[0], "http://USER:PASSWD@127.0.0.1 ei CIM_SystemComputer")
+	fmt.Println("  ", os.Args[0], "https://USER:PASSWD@127.0.0.1 ein CIM_SystemComputer")
 	fmt.Println("")
 }
 
 func main() {
-
 	fmt.Println("")
 
 	if 4 != len(os.Args) {
@@ -99,7 +98,7 @@ func main() {
 		usage()
 		os.Exit(1)
 	}
-	cli := NewClient(os.Args[1], "")
+	cli := NewClient(os.Args[1])
 	if nil == cli {
 		fmt.Println("Error: Invalid URL")
 		os.Exit(1)
