@@ -34,11 +34,6 @@ const (
 	DefaultNamespace string = "root/cimv2"
 )
 
-var DefaultPortMap map[string]int = map[string]int{
-	"http":  DefaultPortHttp,
-	"https": DefaultPortHttps,
-}
-
 type WBEMConnection struct {
 	scheme    string
 	host      string
@@ -49,7 +44,17 @@ type WBEMConnection struct {
 	httpc     *http.Client
 }
 
-func NewWBEMConn(urlstr string, namespace string) (*WBEMConnection, error) {
+func defaultPortMap(scheme string) int {
+	switch scheme {
+	case "http":
+		return DefaultPortHttp
+	case "https":
+		return DefaultPortHttps
+	}
+	return DefaultPortHttp
+}
+
+func NewWBEMConn(urlstr string) (*WBEMConnection, error) {
 	res, err := url.Parse(urlstr)
 	if nil != err {
 		return nil, err
@@ -69,12 +74,14 @@ func NewWBEMConn(urlstr string, namespace string) (*WBEMConnection, error) {
 		conn.username = res.User.Username()
 		conn.password, _ = res.User.Password()
 	}
-	conn.namespace = namespace
+	if 0 != len(res.Path) {
+		conn.namespace = string([]byte(res.Path)[1:])
+	}
 	if SchemeHttp != conn.scheme && SchemeHttps != conn.scheme {
 		conn.scheme = SchemeHttp
 	}
 	if 0 == conn.port {
-		conn.port = DefaultPortMap[conn.scheme]
+		conn.port = defaultPortMap(conn.scheme)
 	}
 	if "" == conn.namespace {
 		conn.namespace = DefaultNamespace
@@ -88,4 +95,28 @@ func NewWBEMConn(urlstr string, namespace string) (*WBEMConnection, error) {
 		}
 	}
 	return &conn, nil
+}
+
+func (conn *WBEMConnection) GetScheme() string {
+	return conn.scheme
+}
+
+func (conn *WBEMConnection) GetHostAddr() string {
+	return conn.host
+}
+
+func (conn *WBEMConnection) GetHostPort() int {
+	return conn.port
+}
+
+func (conn *WBEMConnection) GetNamespace() string {
+	return conn.namespace
+}
+
+func (conn *WBEMConnection) GetUserName() string {
+	return conn.username
+}
+
+func (conn *WBEMConnection) GetPassword() string {
+	return conn.password
 }
