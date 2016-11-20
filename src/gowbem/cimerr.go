@@ -102,68 +102,128 @@ const (
 	ErrServerIsShuttingDown = 28
 )
 
-var ErrName map[int]string = map[int]string{
-	ErrFailed:                          "CIM_ERR_FAILED",
-	ErrAccessDenied:                    "CIM_ERR_ACCESS_DENIED",
-	ErrInvalidNamespace:                "CIM_ERR_INVALID_NAMESPACE",
-	ErrInvalidParameter:                "CIM_ERR_INVALID_PARAMETER",
-	ErrInvalidClass:                    "CIM_ERR_INVALID_CLASS",
-	ErrNotFound:                        "CIM_ERR_NOT_FOUND",
-	ErrNotSupported:                    "CIM_ERR_NOT_SUPPORTED",
-	ErrClassHasChildren:                "CIM_ERR_CLASS_HAS_CHILDREN",
-	ErrClassHasInstances:               "CIM_ERR_CLASS_HAS_INSTANCES",
-	ErrInvalidSuperclass:               "CIM_ERR_INVALID_SUPERCLASS",
-	ErrAlreadyExists:                   "CIM_ERR_ALREADY_EXISTS",
-	ErrNoSuchProperty:                  "CIM_ERR_NO_SUCH_PROPERTY",
-	ErrTypeMismatch:                    "CIM_ERR_TYPE_MISMATCH",
-	ErrQueryLanguageNotSupported:       "CIM_ERR_QUERY_LANGUAGE_NOT_SUPPORTED",
-	ErrInvalidQuery:                    "CIM_ERR_INVALID_QUERY",
-	ErrMethodNotAvailable:              "CIM_ERR_METHOD_NOT_AVAILABLE",
-	ErrMethodNotFound:                  "CIM_ERR_METHOD_NOT_FOUND",
-	ErrNameSpaceNotEmpty:               "CIM_ERR_NAMESPACE_NOT_EMPTY",
-	ErrInvalidEnumerationContext:       "CIM_ERR_INVALID_ENUMERATION_CONTEXT",
-	ErrInvalidOperationTimeout:         "CIM_ERR_INVALID_OPERATION_TIMEOUT",
-	ErrPullHasBeenAbandoned:            "CIM_ERR_PULL_HAS_BEEN_ABANDONED",
-	ErrPullCannotBeAbandoned:           "CIM_ERR_PULL_CANNOT_BE_ABANDONED",
-	ErrFilteredEnumerationNotSupported: "CIM_ERR_FILTERED_ENUMERATION_NOT_SUPPORTED",
-	ErrContinuationOnErrorNotSupported: "CIM_ERR_CONTINUATION_ON_ERROR_NOT_SUPPORTED",
-	ErrServerLimitsExceeded:            "CIM_ERR_SERVER_LIMITS_EXCEEDED",
-	ErrServerIsShuttingDown:            "CIM_ERR_SERVER_IS_SHUTTING_DOWN",
-}
-
-var ErrDesc map[int]string = map[int]string{
-	ErrFailed:                          "A general error occurred",
-	ErrAccessDenied:                    "Resource not available",
-	ErrInvalidNamespace:                "The target namespace does not exist",
-	ErrInvalidParameter:                "Parameter value(s) invalid",
-	ErrInvalidClass:                    "The specified Class does not exist",
-	ErrNotFound:                        "Requested object could not be found",
-	ErrNotSupported:                    "Operation not supported",
-	ErrClassHasChildren:                "Class has subclasses",
-	ErrClassHasInstances:               "Class has instances",
-	ErrInvalidSuperclass:               "Superclass does not exist",
-	ErrAlreadyExists:                   "Object already exists",
-	ErrNoSuchProperty:                  "Property does not exist",
-	ErrTypeMismatch:                    "Value incompatible with type",
-	ErrQueryLanguageNotSupported:       "Query language not supported",
-	ErrInvalidQuery:                    "Query not valid",
-	ErrMethodNotAvailable:              "Extrinsic method not executed",
-	ErrMethodNotFound:                  "Extrinsic method does not exist",
-	ErrNameSpaceNotEmpty:               "Namespace not empty",
-	ErrInvalidEnumerationContext:       "Enumeration context is invalid",
-	ErrInvalidOperationTimeout:         "Operation timeout not supported",
-	ErrPullHasBeenAbandoned:            "Pull operation has been abandoned",
-	ErrPullCannotBeAbandoned:           "Attempt to abandon a pull operation failed",
-	ErrFilteredEnumerationNotSupported: "Filtered pulled enumeration not supported",
-	ErrContinuationOnErrorNotSupported: "WBEM server does not support continuation on error",
-	ErrServerLimitsExceeded:            "WBEM server limits exceeded",
-	ErrServerIsShuttingDown:            "WBEM server is shutting down",
-}
-
 type CIMErr struct {
 	ErrCode int
 	ErrName string
 	ErrDesc string
+}
+
+func errName(err int) string {
+	switch err {
+	case ErrFailed:
+		return "CIM_ERR_FAILED"
+	case ErrAccessDenied:
+		return "CIM_ERR_ACCESS_DENIED"
+	case ErrInvalidNamespace:
+		return "CIM_ERR_INVALID_NAMESPACE"
+	case ErrInvalidParameter:
+		return "CIM_ERR_INVALID_PARAMETER"
+	case ErrInvalidClass:
+		return "CIM_ERR_INVALID_CLASS"
+	case ErrNotFound:
+		return "CIM_ERR_NOT_FOUND"
+	case ErrNotSupported:
+		return "CIM_ERR_NOT_SUPPORTED"
+	case ErrClassHasChildren:
+		return "CIM_ERR_CLASS_HAS_CHILDREN"
+	case ErrClassHasInstances:
+		return "CIM_ERR_CLASS_HAS_INSTANCES"
+	case ErrInvalidSuperclass:
+		return "CIM_ERR_INVALID_SUPERCLASS"
+	case ErrAlreadyExists:
+		return "CIM_ERR_ALREADY_EXISTS"
+	case ErrNoSuchProperty:
+		return "CIM_ERR_NO_SUCH_PROPERTY"
+	case ErrTypeMismatch:
+		return "CIM_ERR_TYPE_MISMATCH"
+	case ErrQueryLanguageNotSupported:
+		return "CIM_ERR_QUERY_LANGUAGE_NOT_SUPPORTED"
+	case ErrInvalidQuery:
+		return "CIM_ERR_INVALID_QUERY"
+	case ErrMethodNotAvailable:
+		return "CIM_ERR_METHOD_NOT_AVAILABLE"
+	case ErrMethodNotFound:
+		return "CIM_ERR_METHOD_NOT_FOUND"
+	case ErrNameSpaceNotEmpty:
+		return "CIM_ERR_NAMESPACE_NOT_EMPTY"
+	case ErrInvalidEnumerationContext:
+		return "CIM_ERR_INVALID_ENUMERATION_CONTEXT"
+	case ErrInvalidOperationTimeout:
+		return "CIM_ERR_INVALID_OPERATION_TIMEOUT"
+	case ErrPullHasBeenAbandoned:
+		return "CIM_ERR_PULL_HAS_BEEN_ABANDONED"
+	case ErrPullCannotBeAbandoned:
+		return "CIM_ERR_PULL_CANNOT_BE_ABANDONED"
+	case ErrFilteredEnumerationNotSupported:
+		return "CIM_ERR_FILTERED_ENUMERATION_NOT_SUPPORTED"
+	case ErrContinuationOnErrorNotSupported:
+		return "CIM_ERR_CONTINUATION_ON_ERROR_NOT_SUPPORTED"
+	case ErrServerLimitsExceeded:
+		return "CIM_ERR_SERVER_LIMITS_EXCEEDED"
+	case ErrServerIsShuttingDown:
+		return "CIM_ERR_SERVER_IS_SHUTTING_DOWN"
+	default:
+	}
+	return "CIM_ERR_FAILED"
+}
+
+func errDesc(err int) string {
+	switch err {
+	case ErrFailed:
+		return "A general error occurred"
+	case ErrAccessDenied:
+		return "Resource not available"
+	case ErrInvalidNamespace:
+		return "The target namespace does not exist"
+	case ErrInvalidParameter:
+		return "Parameter value(s) invalid"
+	case ErrInvalidClass:
+		return "The specified Class does not exist"
+	case ErrNotFound:
+		return "Requested object could not be found"
+	case ErrNotSupported:
+		return "Operation not supported"
+	case ErrClassHasChildren:
+		return "Class has subclasses"
+	case ErrClassHasInstances:
+		return "Class has instances"
+	case ErrInvalidSuperclass:
+		return "Superclass does not exist"
+	case ErrAlreadyExists:
+		return "Object already exists"
+	case ErrNoSuchProperty:
+		return "Property does not exist"
+	case ErrTypeMismatch:
+		return "Value incompatible with type"
+	case ErrQueryLanguageNotSupported:
+		return "Query language not supported"
+	case ErrInvalidQuery:
+		return "Query not valid"
+	case ErrMethodNotAvailable:
+		return "Extrinsic method not executed"
+	case ErrMethodNotFound:
+		return "Extrinsic method does not exist"
+	case ErrNameSpaceNotEmpty:
+		return "Namespace not empty"
+	case ErrInvalidEnumerationContext:
+		return "Enumeration context is invalid"
+	case ErrInvalidOperationTimeout:
+		return "Operation timeout not supported"
+	case ErrPullHasBeenAbandoned:
+		return "Pull operation has been abandoned"
+	case ErrPullCannotBeAbandoned:
+		return "Attempt to abandon a pull operation failed"
+	case ErrFilteredEnumerationNotSupported:
+		return "Filtered pulled enumeration not supported"
+	case ErrContinuationOnErrorNotSupported:
+		return "WBEM server does not support continuation on error"
+	case ErrServerLimitsExceeded:
+		return "WBEM server limits exceeded"
+	case ErrServerIsShuttingDown:
+		return "WBEM server is shutting down"
+	default:
+	}
+	return "A general error occurred"
 }
 
 func (err CIMErr) Error() string {
@@ -176,7 +236,7 @@ func (conn *WBEMConnection) oops(err int) error {
 	}
 	return CIMErr{
 		err,
-		ErrName[err],
-		ErrDesc[err],
+		errName(err),
+		errDesc(err),
 	}
 }
