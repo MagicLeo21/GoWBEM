@@ -87,7 +87,7 @@ func NewWBEMConn(urlstr string) (*WBEMConnection, error) {
 		conn.namespace = DefaultNamespace
 	}
 	conn.httpc = &http.Client{
-		Timeout: time.Minute,
+		Timeout: time.Minute * 5,
 	}
 	if SchemeHttps == conn.scheme {
 		conn.httpc.Transport = &http.Transport{
