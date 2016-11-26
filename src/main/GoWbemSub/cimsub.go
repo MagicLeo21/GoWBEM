@@ -18,6 +18,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
 	"gowbem"
 	"io/ioutil"
@@ -56,7 +57,26 @@ func GetLocalIP(dest string) (string, error) {
 
 func ListenerHandler(writer http.ResponseWriter, req *http.Request) {
 	body, _ := ioutil.ReadAll(req.Body)
-	fmt.Println(string(body))
+	cim := gowbem.CIM{}
+	err := xml.Unmarshal(body, &cim)
+	if nil == err {
+		if nil != cim.Message &&
+			nil != cim.Message.SimpleExpReq &&
+			nil != cim.Message.SimpleExpReq.ExpMethodCall &&
+			0 != len(cim.Message.SimpleExpReq.ExpMethodCall.ExpParamValue) &&
+			nil != cim.Message.SimpleExpReq.ExpMethodCall.ExpParamValue[0].Instance {
+			msg := ""
+			ts := ""
+			for _, prop := range cim.Message.SimpleExpReq.ExpMethodCall.ExpParamValue[0].Instance.Property {
+				if "Message" == prop.Name && nil != prop.Value {
+					msg = prop.Value.Value
+				} else if "IndicationTime" == prop.Name && nil != prop.Value {
+					ts = prop.Value.Value
+				}
+			}
+			fmt.Printf("%s - %s\n", ts, msg)
+		}
+	}
 }
 
 func SubscriptionThread(destURL, localName, srcNS, localIP string, localPort int) {
@@ -86,7 +106,7 @@ func SubscriptionThread(destURL, localName, srcNS, localIP string, localPort int
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	fmt.Println("Subscription Done!")
+	fmt.Println("Done!")
 }
 
 func ListenerThread(localIP string, localPort int) {
@@ -99,17 +119,120 @@ func ListenerThread(localIP string, localPort int) {
 	}
 }
 
-func main() {
-	if 2 != len(os.Args) {
+func CleanSubscription(destURL string) {
+	conn, err := gowbem.NewWBEMConn(destURL)
+	if nil != err {
+		fmt.Println(err.Error())
 		os.Exit(1)
 	}
+	var iClassName gowbem.ClassName = gowbem.ClassName{
+		Name: "CIM_IndicationSubscription",
+	}
+	fmt.Println("Enumerating IndicationSubscription...")
+	instanceName, err := conn.EnumerateInstanceNames(&iClassName)
+	if nil != err {
+		fmt.Println("ERR - Failed to enumerate subscription:", err.Error())
+		os.Exit(1)
+	}
+	if 0 != len(instanceName) {
+		fmt.Println("Deleting IndicationSubscription...")
+		for _, inst := range instanceName {
+			err = conn.DeleteInstance(&inst)
+			if nil != err {
+				fmt.Printf("ERR - Failed to clean subscription:", err.Error())
+				os.Exit(1)
+			}
+		}
+	}
 
-	iDestAddr, _ := GetDestAddr(os.Args[1])
+	iClassName = gowbem.ClassName{
+		Name: "CIM_ListenerDestinationCIMXML",
+	}
+	fmt.Println("Enumerating ListenerDestination...")
+	instanceName, err = conn.EnumerateInstanceNames(&iClassName)
+	if nil != err {
+		fmt.Println("ERR - Failed to enumerate destination:", err.Error())
+		os.Exit(1)
+	}
+	if 0 != len(instanceName) {
+		fmt.Println("Deleting ListenerDestination...")
+		for _, inst := range instanceName {
+			err = conn.DeleteInstance(&inst)
+			if nil != err {
+				fmt.Println("ERR - Failed to clean destination:", err.Error())
+				os.Exit(1)
+			}
+		}
+	}
+
+	iClassName = gowbem.ClassName{
+		Name: "CIM_IndicationFilter",
+	}
+	fmt.Println("Enumerating IndicationFilter...")
+	instanceName, err = conn.EnumerateInstanceNames(&iClassName)
+	if nil != err {
+		fmt.Println("ERR - Failed to enumerate filter:", err.Error())
+		os.Exit(1)
+	}
+	if 0 != len(instanceName) {
+		fmt.Println("Deleting IndicationFilter...")
+		for _, inst := range instanceName {
+			err = conn.DeleteInstance(&inst)
+			if nil != err {
+				fmt.Println("ERR - Failed to clean filter:", err.Error())
+				os.Exit(1)
+			}
+		}
+	}
+	fmt.Println("Done!")
+}
+
+func DoSubscribeAndListen(urls string) {
+	iDestAddr, _ := GetDestAddr(urls)
 	iLocalName, _ := GetHostName()
 	iLocalIP, _ := GetLocalIP(iDestAddr)
 	iSourceNS := "root/cimv2"
 	iLocalPort := 59988
-
-	go SubscriptionThread(os.Args[1], iLocalName, iSourceNS, iLocalIP, iLocalPort)
+	go SubscriptionThread(urls, iLocalName, iSourceNS, iLocalIP, iLocalPort)
 	ListenerThread(iLocalIP, iLocalPort)
+}
+
+func DoCleanSubscription(urls string) {
+	CleanSubscription(urls)
+}
+
+func DoListen(urls string) {
+	iDestAddr, _ := GetDestAddr(urls)
+	iLocalIP, _ := GetLocalIP(iDestAddr)
+	iLocalPort := 59988
+	ListenerThread(iLocalIP, iLocalPort)
+}
+
+func Usage() {
+	fmt.Println("Usage:")
+	fmt.Println("  ", os.Args[0], "<-S|-L|-C> <scheme>://[<username>[:<passwd>]@]<host>[/<namespace>][:<port>]")
+	fmt.Println("Examples:")
+	fmt.Println("  Subscribe and listen indications: ", os.Args[0], "-S http://USER:PASSWD@127.0.0.1/root/interop")
+	fmt.Println("  Just listen indications: ", os.Args[0], "-L https://USER:PASSWD@127.0.0.1/root/interop")
+	fmt.Println("  Clean all subscriptions: ", os.Args[0], "-C https://USER:PASSWD@127.0.0.1/root/interop")
+	fmt.Println("")
+}
+
+func main() {
+	if 3 != len(os.Args) {
+		Usage()
+		os.Exit(1)
+	}
+	switch os.Args[1] {
+	case "-L":
+		DoListen(os.Args[2])
+	case "-C":
+		DoCleanSubscription(os.Args[2])
+	case "-S":
+		DoSubscribeAndListen(os.Args[2])
+	default:
+		Usage()
+		os.Exit(1)
+	}
+	os.Exit(0)
 }
