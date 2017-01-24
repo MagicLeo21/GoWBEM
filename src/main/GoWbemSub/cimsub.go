@@ -67,14 +67,17 @@ func ListenerHandler(writer http.ResponseWriter, req *http.Request) {
 			nil != cim.Message.SimpleExpReq.ExpMethodCall.ExpParamValue[0].Instance {
 			msg := ""
 			ts := ""
+			uuid := ""
 			for _, prop := range cim.Message.SimpleExpReq.ExpMethodCall.ExpParamValue[0].Instance.Property {
 				if "Message" == prop.Name && nil != prop.Value {
 					msg = prop.Value.Value
 				} else if "IndicationTime" == prop.Name && nil != prop.Value {
 					ts = prop.Value.Value
+				} else if "SystemUUID" == prop.Name && nil != prop.Value {
+					uuid = prop.Value.Value
 				}
 			}
-			fmt.Printf("%s - %s\n", ts, msg)
+			fmt.Printf("%s - %s - %s\n", uuid, ts, msg)
 		}
 	}
 }
