@@ -513,7 +513,7 @@ type MethodCall struct {
 	Name              string             `xml:"NAME,attr,omitempty" json:",omitempty"`
 	LocalClassPath    *LocalClassPath    `xml:"LOCALCLASSPATH" json:",omitempty"`
 	LocalInstancePath *LocalInstancePath `xml:"LOCALINSTANCEPATH" json:",omitempty"`
-	ParamValue        []ParamValue       `xml:"PARAMVALUE" json:",omitempty"`
+	ParamValue        []IParamValue      `xml:"PARAMVALUE" json:",omitempty"`
 }
 
 // <!ELEMENT PARAMVALUE (VALUE | VALUE.REFERENCE | VALUE.ARRAY | VALUE.REFARRAY | CLASSNAME | INSTANCENAME | CLASS | INSTANCE | VALUE.NAMEDINSTANCE)?>
