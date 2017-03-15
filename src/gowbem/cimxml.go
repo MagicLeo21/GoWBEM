@@ -553,6 +553,7 @@ type IParamValue struct {
 	Value                *Value                `xml:"VALUE" json:",omitempty"`
 	ValueArray           *ValueArray           `xml:"VALUE.ARRAY" json:",omitempty"`
 	ValueReference       *ValueReference       `xml:"VALUE.REFERENCE" json:",omitempty"`
+	ValueRefArray        *ValueRefArray        `xml:"VALUE.REFARRAY" json:",omitempty"`
 	ClassName            *ClassName            `xml:"CLASSNAME" json:",omitempty"`
 	InstanceName         *InstanceName         `xml:"INSTANCENAME" json:",omitempty"`
 	QualifierDeclaration *QualifierDeclaration `xml:"QUALIFIER.DECLARATION" json:",omitempty"`
