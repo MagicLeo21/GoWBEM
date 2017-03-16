@@ -142,7 +142,7 @@ type ValueReference struct {
 
 // <!ELEMENT VALUE.REFARRAY (VALUE.REFERENCE | VALUE.NULL)*>
 type ValueRefArray struct {
-	ValueReference []ValueReference `xml:"ValueReference" json:",omitempty"`
+	ValueReference []ValueReference `xml:"VALUE.REFERENCE" json:",omitempty"`
 	ValueNull      []ValueNull      `xml:"VALUE.NULL" json:",omitempty"`
 }
 
