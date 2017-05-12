@@ -19,6 +19,7 @@ package gowbem
 
 import (
 	"strconv"
+	"strings"
 )
 
 const (
@@ -654,6 +655,43 @@ func (conn *WBEMConnection) ReferenceNames(objectName *ObjectName, assocClass *C
 		return nil, nil
 	}
 	return iMethRes.IReturnValue.ObjectPath, nil
+}
+
+// The InvokeMethod operation enumerates the association objects that refer to a particular target CIM object (class or instance):
+//      <int []ParamValues>*InvokeMethod (
+//           [IN] <objectName> ObjectName,
+//           [IN] <methodName> string,
+//           [IN] <paramValues> IParamValues
+//      )
+func (conn *WBEMConnection) InvokeMethod(objectName *ObjectName, methodName string, paramValues []IParamValue) (int, []ParamValue, error) {
+	methCall := &MethodCall{Name: methodName}
+
+	var ns []Namespace = []Namespace{}
+	for _, sub := range strings.Split(conn.namespace, "/") {
+		ns = append(ns, Namespace{Name: sub})
+	}
+	namespacePath := &LocalNamespacePath{ns}
+
+	if nil != objectName.ClassName {
+		methCall.LocalClassPath = &LocalClassPath{LocalNamespacePath: namespacePath, ClassName: objectName.ClassName}
+	} else if nil != objectName.InstanceName {
+		methCall.LocalInstancePath = &LocalInstancePath{LocalNamespacePath: namespacePath, InstanceName: objectName.InstanceName}
+	}
+	methCall.ParamValue = paramValues
+
+	methRes, err := conn.methodCall(methCall)
+	if nil != err {
+		return -1, nil, err
+	}
+	if nil != methRes.Error {
+		i, _ := strconv.Atoi(methRes.Error.Code)
+		return i, nil, conn.oops(i)
+	}
+	if nil == methRes.ReturnValue {
+		return -1, nil, conn.oops(0)
+	}
+	retCode, err2 := strconv.Atoi(methRes.ReturnValue.Value.Value)
+	return retCode, methRes.ParamValue, err2
 }
 
 // The GetProperty operation retrieves a single property value from a CIM instance in the target namespace:

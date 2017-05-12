@@ -142,7 +142,7 @@ type ValueReference struct {
 
 // <!ELEMENT VALUE.REFARRAY (VALUE.REFERENCE | VALUE.NULL)*>
 type ValueRefArray struct {
-	ValueReference []ValueReference `xml:"ValueReference" json:",omitempty"`
+	ValueReference []ValueReference `xml:"VALUE.REFERENCE" json:",omitempty"`
 	ValueNull      []ValueNull      `xml:"VALUE.NULL" json:",omitempty"`
 }
 
@@ -513,7 +513,7 @@ type MethodCall struct {
 	Name              string             `xml:"NAME,attr,omitempty" json:",omitempty"`
 	LocalClassPath    *LocalClassPath    `xml:"LOCALCLASSPATH" json:",omitempty"`
 	LocalInstancePath *LocalInstancePath `xml:"LOCALINSTANCEPATH" json:",omitempty"`
-	ParamValue        []ParamValue       `xml:"PARAMVALUE" json:",omitempty"`
+	ParamValue        []IParamValue      `xml:"PARAMVALUE" json:",omitempty"`
 }
 
 // <!ELEMENT PARAMVALUE (VALUE | VALUE.REFERENCE | VALUE.ARRAY | VALUE.REFARRAY | CLASSNAME | INSTANCENAME | CLASS | INSTANCE | VALUE.NAMEDINSTANCE)?>
@@ -553,6 +553,7 @@ type IParamValue struct {
 	Value                *Value                `xml:"VALUE" json:",omitempty"`
 	ValueArray           *ValueArray           `xml:"VALUE.ARRAY" json:",omitempty"`
 	ValueReference       *ValueReference       `xml:"VALUE.REFERENCE" json:",omitempty"`
+	ValueRefArray        *ValueRefArray        `xml:"VALUE.REFARRAY" json:",omitempty"`
 	ClassName            *ClassName            `xml:"CLASSNAME" json:",omitempty"`
 	InstanceName         *InstanceName         `xml:"INSTANCENAME" json:",omitempty"`
 	QualifierDeclaration *QualifierDeclaration `xml:"QUALIFIER.DECLARATION" json:",omitempty"`
