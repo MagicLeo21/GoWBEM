@@ -523,6 +523,9 @@ type MethodCall struct {
 //     %EmbeddedObject;
 // >
 type ParamValue struct {
+	Name               string              `xml:"NAME,attr,omitempty" json:",omitempty"`
+	ParamType          string              `xml:"PARAMTYPE,attr,omitempty" json:",omitempty"`
+	EmbeddedObject     string              `xml:"EmbeddedObject,attr,omitempty" json:",omitempty"`
 	Value              *Value              `xml:"VALUE" json:",omitempty"`
 	ValueReference     *ValueReference     `xml:"VALUE.REFERENCE" json:",omitempty"`
 	ValueArray         *ValueArray         `xml:"VALUE.ARRAY" json:",omitempty"`
