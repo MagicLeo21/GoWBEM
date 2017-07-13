@@ -411,7 +411,6 @@ type PropertyReference struct {
 type Method struct {
 	Name               string               `xml:"NAME,attr,omitempty" json:",omitempty"`
 	Type               string               `xml:"TYPE,attr,omitempty" json:",omitempty"`
-	ReferenceClass     string               `xml:"REFERENCECLASS,attr,omitempty" json:",omitempty"`
 	ClassOrigin        string               `xml:"CLASSORIGIN,attr,omitempty" json:",omitempty"`
 	Propagated         string               `xml:"PROPAGATED,attr,omitempty" json:",omitempty"`
 	Qualifier          []Qualifier          `xml:"QUALIFIER" json:",omitempty"`
