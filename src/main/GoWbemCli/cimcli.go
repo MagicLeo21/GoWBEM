@@ -181,7 +181,7 @@ func (cli *Client) InvokeMethod(className string) ([]byte, error) {
 	fmt.Print("Choose method:  ")
 	idx = 0
 	fmt.Scanf("%d\n", &idx)
-	if 0 >= idx || len(instanceNames) < idx {
+	if 0 >= idx || len(class[0].Method) < idx {
 		fmt.Println("Error:", "Invalid index")
 		return nil, nil
 	}
