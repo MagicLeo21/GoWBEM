@@ -22,7 +22,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -172,7 +171,7 @@ func (conn *WBEMConnection) iMethodCall(call *IMethodCall) (*IMethodResponse, er
 	cim = CIM{}
 	err = xml.Unmarshal(raw, &cim)
 	if nil != err {
-		log.Print(string(raw))
+		loggerPrint(string(raw))
 		return nil, err
 	}
 	if nil == cim.Message || nil == cim.Message.SimpleRsp || nil == cim.Message.SimpleRsp.IMethodResponse {
