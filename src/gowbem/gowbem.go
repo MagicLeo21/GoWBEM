@@ -109,14 +109,21 @@ func (conn *WBEMConnection) GetHostPort() int {
 	return conn.port
 }
 
-func (conn *WBEMConnection) GetNamespace() string {
-	return conn.namespace
-}
-
 func (conn *WBEMConnection) GetUserName() string {
 	return conn.username
 }
 
 func (conn *WBEMConnection) GetPassword() string {
 	return conn.password
+}
+
+func (conn *WBEMConnection) GetNamespace() string {
+	return conn.namespace
+}
+
+func (conn *WBEMConnection) SetNamespace(namespace string) {
+	conn.namespace = namespace
+	if "" == conn.namespace {
+		conn.namespace = DefaultNamespace
+	}
 }
