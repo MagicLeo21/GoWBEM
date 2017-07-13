@@ -178,37 +178,3 @@ func (conn *WBEMConnection) iMethodCall(call *IMethodCall) (*IMethodResponse, er
 	}
 	return cim.Message.SimpleRsp.IMethodResponse, nil
 }
-
-func (conn *WBEMConnection) methodCall(call *MethodCall) (*MethodResponse, error) {
-	if nil == call {
-		return nil, conn.oops(ErrFailed)
-	}
-	var cim CIM = CIM{
-		CIMVersion: "2.0",
-		DTDVersion: "2.0",
-		Message: &Message{
-			ID:              "1001",
-			ProtocolVersion: "1.0",
-			SimpleReq: &SimpleReq{
-				MethodCall: call},
-		},
-	}
-	raw, err := xml.Marshal(&cim)
-	if nil != err {
-		return nil, err
-	}
-	raw = append([]byte(xml.Header), raw...)
-	raw, err = conn.doPostMethodCall(call.Name, raw)
-	if nil != err {
-		return nil, err
-	}
-	cim = CIM{}
-	err = xml.Unmarshal(raw, &cim)
-	if nil != err {
-		return nil, err
-	}
-	if nil == cim.Message || nil == cim.Message.SimpleRsp || nil == cim.Message.SimpleRsp.MethodResponse {
-		return nil, conn.oops(ErrFailed)
-	}
-	return cim.Message.SimpleRsp.MethodResponse, nil
-}
