@@ -125,7 +125,7 @@ type InstanceWithPath ValueInstanceWithPath
 //      )
 func (conn *WBEMConnection) GetClass(className *ClassName, localOnly bool, includeQualifiers bool, includeClassOrigin bool, propertyList []string) ([]Class, error) {
 	if nil == className {
-		return nil, conn.oops(ErrFailed)
+		return nil, conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("GetClass")
 	iMethCall.appendNamespace(conn.namespace)
@@ -148,7 +148,7 @@ func (conn *WBEMConnection) GetClass(className *ClassName, localOnly bool, inclu
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -166,7 +166,7 @@ func (conn *WBEMConnection) GetClass(className *ClassName, localOnly bool, inclu
 //      )
 func (conn *WBEMConnection) GetInstance(instanceName *InstanceName, includeClassOrigin bool, propertyList []string) ([]Instance, error) {
 	if nil == instanceName {
-		return nil, conn.oops(ErrFailed)
+		return nil, conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("GetInstance")
 	iMethCall.appendNamespace(conn.namespace)
@@ -183,7 +183,7 @@ func (conn *WBEMConnection) GetInstance(instanceName *InstanceName, includeClass
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -197,7 +197,7 @@ func (conn *WBEMConnection) GetInstance(instanceName *InstanceName, includeClass
 //      )
 func (conn *WBEMConnection) DeleteClass(className *ClassName) error {
 	if nil == className {
-		return conn.oops(ErrFailed)
+		return conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("DeleteClass")
 	iMethCall.appendNamespace(conn.namespace)
@@ -208,7 +208,7 @@ func (conn *WBEMConnection) DeleteClass(className *ClassName) error {
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -219,7 +219,7 @@ func (conn *WBEMConnection) DeleteClass(className *ClassName) error {
 //      )
 func (conn *WBEMConnection) DeleteInstance(instanceName *InstanceName) error {
 	if nil == instanceName {
-		return conn.oops(ErrFailed)
+		return conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("DeleteInstance")
 	iMethCall.appendNamespace(conn.namespace)
@@ -230,7 +230,7 @@ func (conn *WBEMConnection) DeleteInstance(instanceName *InstanceName) error {
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -241,7 +241,7 @@ func (conn *WBEMConnection) DeleteInstance(instanceName *InstanceName) error {
 //      )
 func (conn *WBEMConnection) CreateClass(newClass *Class) error {
 	if nil == newClass {
-		return conn.oops(ErrFailed)
+		return conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("CreateClass")
 	iMethCall.appendNamespace(conn.namespace)
@@ -252,7 +252,7 @@ func (conn *WBEMConnection) CreateClass(newClass *Class) error {
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -263,7 +263,7 @@ func (conn *WBEMConnection) CreateClass(newClass *Class) error {
 //      )
 func (conn *WBEMConnection) CreateInstance(newInstance *Instance) error {
 	if nil == newInstance {
-		return conn.oops(ErrFailed)
+		return conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("CreateInstance")
 	iMethCall.appendNamespace(conn.namespace)
@@ -274,7 +274,7 @@ func (conn *WBEMConnection) CreateInstance(newInstance *Instance) error {
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -285,7 +285,7 @@ func (conn *WBEMConnection) CreateInstance(newInstance *Instance) error {
 //      )
 func (conn *WBEMConnection) ModifyClass(modifiedClass *Class) error {
 	if nil == modifiedClass {
-		return conn.oops(ErrFailed)
+		return conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("ModifyClass")
 	iMethCall.appendNamespace(conn.namespace)
@@ -296,7 +296,7 @@ func (conn *WBEMConnection) ModifyClass(modifiedClass *Class) error {
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -320,7 +320,7 @@ func (conn *WBEMConnection) ModifyInstance(modifiedInstance *ValueNamedInstance,
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -357,7 +357,7 @@ func (conn *WBEMConnection) EnumerateClasses(className *ClassName, deepInheritan
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -385,7 +385,7 @@ func (conn *WBEMConnection) EnumerateClassNames(className *ClassName, deepInheri
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -404,7 +404,7 @@ func (conn *WBEMConnection) EnumerateClassNames(className *ClassName, deepInheri
 //      )
 func (conn *WBEMConnection) EnumerateInstances(className *ClassName, deepInheritance bool, includeClassOrigin bool, propertyList []string) ([]ValueNamedInstance, error) {
 	if nil == className {
-		return nil, conn.oops(ErrFailed)
+		return nil, conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("EnumerateInstances")
 	iMethCall.appendNamespace(conn.namespace)
@@ -424,7 +424,7 @@ func (conn *WBEMConnection) EnumerateInstances(className *ClassName, deepInherit
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -438,7 +438,7 @@ func (conn *WBEMConnection) EnumerateInstances(className *ClassName, deepInherit
 //      )
 func (conn *WBEMConnection) EnumerateInstanceNames(className *ClassName) ([]InstanceName, error) {
 	if nil == className {
-		return nil, conn.oops(ErrFailed)
+		return nil, conn.oops(ErrFailed, "")
 	}
 	iMethCall := newIMechCall("EnumerateInstanceNames")
 	iMethCall.appendNamespace(conn.namespace)
@@ -449,7 +449,7 @@ func (conn *WBEMConnection) EnumerateInstanceNames(className *ClassName) ([]Inst
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -473,7 +473,7 @@ func (conn *WBEMConnection) ExecQuery(queryLanguage string, query string) (*Obje
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -529,7 +529,7 @@ func (conn *WBEMConnection) Associators(objectName *ObjectName, assocClass *Clas
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -571,7 +571,7 @@ func (conn *WBEMConnection) AssociatorNames(objectName *ObjectName, assocClass *
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -614,7 +614,7 @@ func (conn *WBEMConnection) References(objectName *ObjectName, resultClass *Clas
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -648,7 +648,7 @@ func (conn *WBEMConnection) ReferenceNames(objectName *ObjectName, assocClass *C
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -676,10 +676,10 @@ func (conn *WBEMConnection) InvokeMethod(objectName *ObjectName, methodName stri
 	}
 	if nil != methRes.Error {
 		i, _ := strconv.Atoi(methRes.Error.Code)
-		return i, nil, conn.oops(i)
+		return i, nil, conn.oops(i, methRes.Error.Description)
 	}
 	if nil == methRes.ReturnValue {
-		return -1, nil, conn.oops(0)
+		return -1, nil, conn.oops(ErrFailed, "")
 	}
 	retCode, _ := strconv.Atoi(methRes.ReturnValue.Value.Value)
 	return retCode, methRes.ParamValue, nil
@@ -701,7 +701,7 @@ func (conn *WBEMConnection) GetProperty(instanceName *InstanceName, propertyName
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -736,7 +736,7 @@ func (conn *WBEMConnection) SetProperty(instanceName *InstanceName, propertyName
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -755,7 +755,7 @@ func (conn *WBEMConnection) GetQualifier(qualifierName string) (*QualifierDeclar
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil
@@ -780,7 +780,7 @@ func (conn *WBEMConnection) SetQualifier(qualifierDecl *QualifierDeclaration) er
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -799,7 +799,7 @@ func (conn *WBEMConnection) DeleteQualifier(qualifierName string) error {
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return conn.oops(i)
+		return conn.oops(i, iMethRes.Error.Description)
 	}
 	return nil
 }
@@ -816,7 +816,7 @@ func (conn *WBEMConnection) EnumerateQualifiers() ([]QualifierDeclaration, error
 	}
 	if nil != iMethRes.Error {
 		i, _ := strconv.Atoi(iMethRes.Error.Code)
-		return nil, conn.oops(i)
+		return nil, conn.oops(i, iMethRes.Error.Description)
 	}
 	if nil == iMethRes.IReturnValue {
 		return nil, nil

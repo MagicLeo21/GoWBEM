@@ -230,13 +230,16 @@ func (err CIMErr) Error() string {
 	return fmt.Sprintf("%v - %v - %v", err.ErrCode, err.ErrName, err.ErrDesc)
 }
 
-func (conn *WBEMConnection) oops(err int) error {
+func (conn *WBEMConnection) oops(err int, desc string) error {
 	if 1 > err || 18 == err || 19 == err || 28 < err {
 		err = ErrFailed
+	}
+	if "" == desc {
+		desc = errDesc(err)
 	}
 	return CIMErr{
 		err,
 		errName(err),
-		errDesc(err),
+		desc,
 	}
 }

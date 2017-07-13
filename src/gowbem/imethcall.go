@@ -147,7 +147,7 @@ func (conn *WBEMConnection) doPostMethodCall(method string, content []byte) ([]b
 
 func (conn *WBEMConnection) iMethodCall(call *IMethodCall) (*IMethodResponse, error) {
 	if nil == call {
-		return nil, conn.oops(ErrFailed)
+		return nil, conn.oops(ErrFailed, "")
 	}
 	var cim CIM = CIM{
 		CIMVersion: "2.0",
@@ -176,7 +176,7 @@ func (conn *WBEMConnection) iMethodCall(call *IMethodCall) (*IMethodResponse, er
 		return nil, err
 	}
 	if nil == cim.Message || nil == cim.Message.SimpleRsp || nil == cim.Message.SimpleRsp.IMethodResponse {
-		return nil, conn.oops(ErrFailed)
+		return nil, conn.oops(ErrFailed, "")
 	}
 	return cim.Message.SimpleRsp.IMethodResponse, nil
 }

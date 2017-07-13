@@ -50,7 +50,7 @@ func (methCall *MethodCall) appendLocalInstancePath(namespace string, instanceNa
 
 func (conn *WBEMConnection) methodCall(call *MethodCall) (*MethodResponse, error) {
 	if nil == call {
-		return nil, conn.oops(ErrFailed)
+		return nil, conn.oops(ErrFailed, "")
 	}
 	var cim CIM = CIM{
 		CIMVersion: "2.0",
@@ -77,7 +77,7 @@ func (conn *WBEMConnection) methodCall(call *MethodCall) (*MethodResponse, error
 		return nil, err
 	}
 	if nil == cim.Message || nil == cim.Message.SimpleRsp || nil == cim.Message.SimpleRsp.MethodResponse {
-		return nil, conn.oops(ErrFailed)
+		return nil, conn.oops(ErrFailed, "")
 	}
 	return cim.Message.SimpleRsp.MethodResponse, nil
 }
