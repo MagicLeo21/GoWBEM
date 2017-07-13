@@ -84,8 +84,8 @@ func usage() {
 	fmt.Println("Usage:")
 	fmt.Println("  ", os.Args[0], "<scheme>://[<username>[:<passwd>]@]<host>[/<namespace>][:<port>] <act> <param>")
 	fmt.Println("Examples:")
-	fmt.Println("  ", os.Args[0], "http://USER:PASSWD@127.0.0.1 ei CIM_SystemComputer")
-	fmt.Println("  ", os.Args[0], "https://USER:PASSWD@127.0.0.1 ein CIM_SystemComputer")
+	fmt.Println("  ", os.Args[0], "http://USER:PASSWD@127.0.0.1 ei CIM_ComputerSystem")
+	fmt.Println("  ", os.Args[0], "https://USER:PASSWD@127.0.0.1 ein CIM_ComputerSystem")
 	fmt.Println("")
 }
 
