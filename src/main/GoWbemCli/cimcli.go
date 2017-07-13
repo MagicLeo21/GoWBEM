@@ -34,6 +34,8 @@ var MethMap map[string]CliMeth = map[string]CliMeth{
 	"ei":  (*Client).EnumerateInstances,
 	"ein": (*Client).EnumerateInstanceNames,
 	"gc":  (*Client).GetClass,
+	"gi":  (*Client).GetInstance,
+	"im":  (*Client).InvokeMethod,
 }
 
 func NewClient(url string) *Client {
@@ -77,6 +79,102 @@ func (cli *Client) EnumerateInstanceNames(className string) ([]byte, error) {
 		return nil, err
 	}
 	res, _ := json.MarshalIndent(&instanceName, "", "    ")
+	return res, nil
+}
+
+func (cli *Client) GetInstance(className string) ([]byte, error) {
+	var iClassName gowbem.ClassName = gowbem.ClassName{
+		Name: className,
+	}
+	instanceNames, err := cli.conn.EnumerateInstanceNames(&iClassName)
+	if nil != err {
+		return nil, err
+	}
+	if 0 != len(instanceNames) {
+		for i, instName := range instanceNames {
+			fmt.Printf("Instance [%d]:\n", i+1)
+			res, _ := json.MarshalIndent(instName, "", "    ")
+			fmt.Println(string(res))
+		}
+		fmt.Print("Choose instance:  ")
+		idx := 0
+		fmt.Scanf("%d", &idx)
+		if 0 < idx && len(instanceNames) >= idx {
+			inst, err := cli.conn.GetInstance(&instanceNames[idx-1], false, nil)
+			if nil != err {
+				return nil, err
+			}
+			res, _ := json.MarshalIndent(&inst, "", "    ")
+			return res, nil
+		} else {
+			fmt.Println("Error:", "Invalid index")
+			return nil, nil
+		}
+	}
+	return nil, nil
+}
+
+func (cli *Client) InvokeMethod(className string) ([]byte, error) {
+	var iClassName gowbem.ClassName = gowbem.ClassName{
+		Name: className,
+	}
+	instanceNames, err := cli.conn.EnumerateInstanceNames(&iClassName)
+	if nil != err {
+		return nil, err
+	}
+	class, err := cli.conn.GetClass(&iClassName, true, true, false, nil)
+	if nil != err {
+		return nil, err
+	}
+	if 0 == len(class[0].Method) {
+		return nil, nil
+	}
+	if 0 == len(instanceNames) {
+		return nil, nil
+	}
+	for i, instName := range instanceNames {
+		fmt.Printf("Instance [%d]:\n", i+1)
+		res, _ := json.MarshalIndent(instName, "", "    ")
+		fmt.Println(string(res))
+	}
+	fmt.Print("Choose instance:  ")
+	idx := 0
+	fmt.Scanf("%d\n", &idx)
+	if 0 >= idx || len(instanceNames) < idx {
+		fmt.Println("Error:", "Invalid index")
+		return nil, nil
+	}
+	instName := instanceNames[idx-1]
+	fmt.Println("")
+	for i, method := range class[0].Method {
+		fmt.Printf("Method [%d]: %s\n", i+1, method.Name)
+	}
+	fmt.Print("Choose method:  ")
+	idx = 0
+	fmt.Scanf("%d\n", &idx)
+	if 0 >= idx || len(instanceNames) < idx {
+		fmt.Println("Error:", "Invalid index")
+		return nil, nil
+	}
+	method := class[0].Method[idx-1]
+	var paramVal []gowbem.ParamValue = []gowbem.ParamValue{}
+	if 0 < len(method.Parameter) {
+		for _, param := range method.Parameter {
+			str := ""
+			fmt.Printf("Parameter '%s':  ", param.Name)
+			fmt.Scanf("%s\n", &str)
+			if "" != str {
+				paramVal = append(paramVal, gowbem.ParamValue{Name: param.Name, Value: &gowbem.Value{str}})
+			}
+		}
+	}
+	objName := gowbem.ObjectName{InstanceName: &instName}
+	ret, paramVal, err := cli.conn.InvokeMethod(&objName, method.Name, paramVal)
+	if nil != err {
+		return nil, err
+	}
+	fmt.Printf("\nReturn code: %d\n", ret)
+	res, _ := json.MarshalIndent(paramVal, "", "    ")
 	return res, nil
 }
 
