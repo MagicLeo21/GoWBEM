@@ -35,6 +35,7 @@ var MethMap map[string]CliMeth = map[string]CliMeth{
 	"ein": (*Client).EnumerateInstanceNames,
 	"gc":  (*Client).GetClass,
 	"gi":  (*Client).GetInstance,
+	"di":  (*Client).DeleteInstance,
 	"im":  (*Client).InvokeMethod,
 }
 
@@ -98,7 +99,7 @@ func (cli *Client) GetInstance(className string) ([]byte, error) {
 		}
 		fmt.Print("Choose instance:  ")
 		idx := 0
-		fmt.Scanf("%d", &idx)
+		fmt.Scanf("%d\n", &idx)
 		if 0 < idx && len(instanceNames) >= idx {
 			inst, err := cli.conn.GetInstance(&instanceNames[idx-1], false, nil)
 			if nil != err {
@@ -108,7 +109,35 @@ func (cli *Client) GetInstance(className string) ([]byte, error) {
 			return res, nil
 		} else {
 			fmt.Println("Error:", "Invalid index")
-			return nil, nil
+		}
+	}
+	return nil, nil
+}
+
+func (cli *Client) DeleteInstance(className string) ([]byte, error) {
+	var iClassName gowbem.ClassName = gowbem.ClassName{
+		Name: className,
+	}
+	instanceNames, err := cli.conn.EnumerateInstanceNames(&iClassName)
+	if nil != err {
+		return nil, err
+	}
+	if 0 != len(instanceNames) {
+		for i, instName := range instanceNames {
+			fmt.Printf("Instance [%d]:\n", i+1)
+			res, _ := json.MarshalIndent(instName, "", "    ")
+			fmt.Println(string(res))
+		}
+		fmt.Print("Choose instance:  ")
+		idx := 0
+		fmt.Scanf("%d\n", &idx)
+		if 0 < idx && len(instanceNames) >= idx {
+			err := cli.conn.DeleteInstance(&instanceNames[idx-1])
+			if nil != err {
+				return nil, err
+			}
+		} else {
+			fmt.Println("Error:", "Invalid index")
 		}
 	}
 	return nil, nil
