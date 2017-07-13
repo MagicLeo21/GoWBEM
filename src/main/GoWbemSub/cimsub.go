@@ -66,8 +66,9 @@ func ListenerHandler(writer http.ResponseWriter, req *http.Request) {
 			0 != len(cim.Message.SimpleExpReq.ExpMethodCall.ExpParamValue) &&
 			nil != cim.Message.SimpleExpReq.ExpMethodCall.ExpParamValue[0].Instance {
 			msg := ""
-			ts := ""
-			uuid := ""
+			ts := "Unknown"
+			uuid := "Unknown"
+			ipaddr := req.RemoteAddr
 			for _, prop := range cim.Message.SimpleExpReq.ExpMethodCall.ExpParamValue[0].Instance.Property {
 				if "Message" == prop.Name && nil != prop.Value {
 					msg = prop.Value.Value
@@ -77,7 +78,7 @@ func ListenerHandler(writer http.ResponseWriter, req *http.Request) {
 					uuid = prop.Value.Value
 				}
 			}
-			fmt.Printf("%s - %s - %s\n", uuid, ts, msg)
+			fmt.Printf("%s | %s | %s | %s\n", ipaddr, ts, uuid, msg)
 		}
 	}
 }
