@@ -218,13 +218,13 @@ func usage() {
 
 func main() {
 	fmt.Println("")
-
 	if 4 != len(os.Args) {
 		fmt.Println("Error: Invalid parameter(s)")
 		fmt.Println("---")
 		usage()
 		os.Exit(1)
 	}
+	gowbem.SetLoggerEnabled(true)
 	cli := NewClient(os.Args[1])
 	if nil == cli {
 		fmt.Println("Error: Invalid URL")
