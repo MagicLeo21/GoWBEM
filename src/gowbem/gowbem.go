@@ -27,11 +27,12 @@ import (
 )
 
 const (
-	SchemeHttp       string = "http"
-	SchemeHttps      string = "https"
-	DefaultPortHttp  int    = 5988
-	DefaultPortHttps int    = 5989
-	DefaultNamespace string = "root/cimv2"
+	SchemeHttp       string        = "http"
+	SchemeHttps      string        = "https"
+	DefaultPortHttp  int           = 5988
+	DefaultPortHttps int           = 5989
+	DefaultNamespace string        = "root/cimv2"
+	DefaultTimeout   time.Duration = 120 * time.Second
 )
 
 type WBEMConnection struct {
@@ -87,7 +88,7 @@ func NewWBEMConn(urlstr string) (*WBEMConnection, error) {
 		conn.namespace = DefaultNamespace
 	}
 	conn.httpc = &http.Client{
-		Timeout: time.Minute * 5,
+		Timeout: DefaultTimeout,
 	}
 	if SchemeHttps == conn.scheme {
 		conn.httpc.Transport = &http.Transport{
@@ -126,4 +127,12 @@ func (conn *WBEMConnection) SetNamespace(namespace string) {
 	if "" == conn.namespace {
 		conn.namespace = DefaultNamespace
 	}
+}
+
+func (conn *WBEMConnection) GetHttpTimeout() time.Duration {
+	return conn.httpc.Timeout
+}
+
+func (conn *WBEMConnection) SetHttpTimeout(timeout time.Duration) {
+	conn.httpc.Timeout = timeout
 }
