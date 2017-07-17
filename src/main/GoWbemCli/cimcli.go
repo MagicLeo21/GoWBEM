@@ -91,27 +91,28 @@ func (cli *Client) GetInstance(className string) ([]byte, error) {
 	if nil != err {
 		return nil, err
 	}
-	if 0 != len(instanceNames) {
-		for i, instName := range instanceNames {
-			fmt.Printf("Instance [%d]:\n", i+1)
-			res, _ := json.MarshalIndent(instName, "", "    ")
-			fmt.Println(string(res))
-		}
-		fmt.Print("Choose instance:  ")
-		idx := 0
-		fmt.Scanf("%d\n", &idx)
-		if 0 < idx && len(instanceNames) >= idx {
-			inst, err := cli.conn.GetInstance(&instanceNames[idx-1], false, nil)
-			if nil != err {
-				return nil, err
-			}
-			res, _ := json.MarshalIndent(&inst, "", "    ")
-			return res, nil
-		} else {
-			fmt.Println("Error:", "Invalid index")
-		}
+	if 0 == len(instanceNames) {
+		err = fmt.Errorf("No instance")
+		return nil, err
 	}
-	return nil, nil
+	for i, instName := range instanceNames {
+		fmt.Printf("Instance [%d]:\n", i+1)
+		res, _ := json.MarshalIndent(instName, "", "    ")
+		fmt.Println(string(res))
+	}
+	fmt.Print("Choose instance:  ")
+	idx := 0
+	fmt.Scanf("%d\n", &idx)
+	if 0 >= idx || len(instanceNames) < idx {
+		err = fmt.Errorf("Invalid index")
+		return nil, err
+	}
+	inst, err := cli.conn.GetInstance(&instanceNames[idx-1], false, nil)
+	if nil != err {
+		return nil, err
+	}
+	res, _ := json.MarshalIndent(&inst, "", "    ")
+	return res, nil
 }
 
 func (cli *Client) DeleteInstance(className string) ([]byte, error) {
@@ -122,25 +123,24 @@ func (cli *Client) DeleteInstance(className string) ([]byte, error) {
 	if nil != err {
 		return nil, err
 	}
-	if 0 != len(instanceNames) {
-		for i, instName := range instanceNames {
-			fmt.Printf("Instance [%d]:\n", i+1)
-			res, _ := json.MarshalIndent(instName, "", "    ")
-			fmt.Println(string(res))
-		}
-		fmt.Print("Choose instance:  ")
-		idx := 0
-		fmt.Scanf("%d\n", &idx)
-		if 0 < idx && len(instanceNames) >= idx {
-			err := cli.conn.DeleteInstance(&instanceNames[idx-1])
-			if nil != err {
-				return nil, err
-			}
-		} else {
-			fmt.Println("Error:", "Invalid index")
-		}
+	if 0 == len(instanceNames) {
+		err = fmt.Errorf("No instance")
+		return nil, err
 	}
-	return nil, nil
+	for i, instName := range instanceNames {
+		fmt.Printf("Instance [%d]:\n", i+1)
+		res, _ := json.MarshalIndent(instName, "", "    ")
+		fmt.Println(string(res))
+	}
+	fmt.Print("Choose instance:  ")
+	idx := 0
+	fmt.Scanf("%d\n", &idx)
+	if 0 >= idx || len(instanceNames) < idx {
+		err = fmt.Errorf("Invalid index")
+		return nil, err
+	}
+	err = cli.conn.DeleteInstance(&instanceNames[idx-1])
+	return nil, err
 }
 
 func (cli *Client) InvokeMethod(className string) ([]byte, error) {
@@ -156,10 +156,12 @@ func (cli *Client) InvokeMethod(className string) ([]byte, error) {
 		return nil, err
 	}
 	if 0 == len(class[0].Method) {
-		return nil, nil
+		err = fmt.Errorf("No method")
+		return nil, err
 	}
 	if 0 == len(instanceNames) {
-		return nil, nil
+		err = fmt.Errorf("No instance")
+		return nil, err
 	}
 	for i, instName := range instanceNames {
 		fmt.Printf("Instance [%d]:\n", i+1)
@@ -170,11 +172,11 @@ func (cli *Client) InvokeMethod(className string) ([]byte, error) {
 	idx := 0
 	fmt.Scanf("%d\n", &idx)
 	if 0 >= idx || len(instanceNames) < idx {
-		fmt.Println("Error:", "Invalid index")
-		return nil, nil
+		err = fmt.Errorf("Invalid index")
+		return nil, err
 	}
 	instName := instanceNames[idx-1]
-	fmt.Println("")
+	//fmt.Println("")
 	for i, method := range class[0].Method {
 		fmt.Printf("Method [%d]: %s\n", i+1, method.Name)
 	}
@@ -182,8 +184,8 @@ func (cli *Client) InvokeMethod(className string) ([]byte, error) {
 	idx = 0
 	fmt.Scanf("%d\n", &idx)
 	if 0 >= idx || len(class[0].Method) < idx {
-		fmt.Println("Error:", "Invalid index")
-		return nil, nil
+		err = fmt.Errorf("Invalid index")
+		return nil, err
 	}
 	method := class[0].Method[idx-1]
 	var paramVal []gowbem.ParamValue = []gowbem.ParamValue{}
@@ -202,7 +204,8 @@ func (cli *Client) InvokeMethod(className string) ([]byte, error) {
 	if nil != err {
 		return nil, err
 	}
-	fmt.Printf("\nReturn code: %d\n", ret)
+	//fmt.Println("")
+	fmt.Printf("Return code: %d\n", ret)
 	res, _ := json.MarshalIndent(paramVal, "", "    ")
 	return res, nil
 }
@@ -210,19 +213,26 @@ func (cli *Client) InvokeMethod(className string) ([]byte, error) {
 func usage() {
 	fmt.Println("Usage:")
 	fmt.Println("  ", os.Args[0], "<scheme>://[<username>[:<passwd>]@]<host>[/<namespace>][:<port>] <act> <param>")
+	fmt.Println("<act>:")
+	fmt.Println("  ", "ei  - EnumerateInstances")
+	fmt.Println("  ", "ein - EnumerateInstanceNames")
+	fmt.Println("  ", "gc  - GetClass")
+	fmt.Println("  ", "gi  - GetInstance")
+	fmt.Println("  ", "di  - DeleteInstance")
+	fmt.Println("  ", "im  - InvokeMethod")
 	fmt.Println("Examples:")
 	fmt.Println("  ", os.Args[0], "http://USER:PASSWD@127.0.0.1 ei CIM_ComputerSystem")
-	fmt.Println("  ", os.Args[0], "https://USER:PASSWD@127.0.0.1 ein CIM_ComputerSystem")
-	fmt.Println("")
+	fmt.Println("  ", os.Args[0], "https://USER:PASSWD@127.0.0.1:5989/root/cimv2 ein CIM_ComputerSystem")
+	//fmt.Println("")
 }
 
 func main() {
-	fmt.Println("")
+	//fmt.Println("")
 	if 4 != len(os.Args) {
 		fmt.Println("Error: Invalid parameter(s)")
-		fmt.Println("---")
+		//fmt.Println("---")
 		usage()
-		os.Exit(1)
+		os.Exit(0)
 	}
 	gowbem.SetLoggerEnabled(true)
 	cli := NewClient(os.Args[1])
@@ -235,11 +245,11 @@ func main() {
 		os.Exit(1)
 	}
 	res, err := MethMap[os.Args[2]](cli, os.Args[3])
-	if nil == err {
-		fmt.Println(string(res))
-	} else {
+	if nil != err {
 		fmt.Println("Error:", err.Error())
+	} else if nil != res {
+		fmt.Println(string(res))
 	}
-	fmt.Println("")
+	//fmt.Println("")
 	os.Exit(0)
 }
