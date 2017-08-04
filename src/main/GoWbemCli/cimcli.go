@@ -21,7 +21,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"gowbem"
+	"log"
 	"os"
+	"time"
 )
 
 type Client struct {
@@ -244,9 +246,10 @@ func main() {
 		fmt.Println("Error: Invalid action")
 		os.Exit(1)
 	}
+	cli.conn.SetHttpTimeout(time.Millisecond * 5000)
 	res, err := MethMap[os.Args[2]](cli, os.Args[3])
 	if nil != err {
-		fmt.Println("Error:", err.Error())
+		log.Println("Error:", err.Error())
 	} else if nil != res {
 		fmt.Println(string(res))
 	}
