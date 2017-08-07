@@ -92,21 +92,21 @@ func SubscriptionThread(destURL, localName, srcNS, localIP string, localPort int
 	iInstance := NewIndicationFilter(localName, srcNS)
 	fmt.Println("Creating IndicationFilter...")
 	err = conn.CreateInstance(iInstance)
-	if nil != err && "11 - CIM_ERR_ALREADY_EXISTS - Object already exists" != err.Error() {
+	if nil != err && false == strings.Contains(err.Error(), "11 - CIM_ERR_ALREADY_EXISTS") {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 	iInstance = NewListenerDestination(localName, localIP, localPort)
 	fmt.Println("Creating ListenerDestination...")
 	err = conn.CreateInstance(iInstance)
-	if nil != err && "11 - CIM_ERR_ALREADY_EXISTS - Object already exists" != err.Error() {
+	if nil != err && false == strings.Contains(err.Error(), "11 - CIM_ERR_ALREADY_EXISTS") {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 	iInstance = NewIndicationSubscription(localName, conn.GetNamespace(), localIP, localPort)
 	fmt.Println("Creating IndicationSubscription...")
 	err = conn.CreateInstance(iInstance)
-	if nil != err && "11 - CIM_ERR_ALREADY_EXISTS - Object already exists" != err.Error() {
+	if nil != err && false == strings.Contains(err.Error(), "11 - CIM_ERR_ALREADY_EXISTS") {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
@@ -123,7 +123,37 @@ func ListenerThread(localIP string, localPort int) {
 	}
 }
 
-func CleanSubscription(destURL string) {
+func UnsubscribeLocal(destURL, localName, localIP string) {
+	conn, err := gowbem.NewWBEMConn(destURL)
+	if nil != err {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	iInstName := NewIndicationSubscriptionInstName(localName, conn.GetNamespace(), localIP)
+	fmt.Println("Deleting IndicationSubscription...")
+	err = conn.DeleteInstance(iInstName)
+	if nil != err && false == strings.Contains(err.Error(), "6 - CIM_ERR_NOT_FOUND") {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	iInstName = NewListenerDestinationInstName(localName, localIP)
+	fmt.Println("Deleting ListenerDestination...")
+	err = conn.DeleteInstance(iInstName)
+	if nil != err && false == strings.Contains(err.Error(), "6 - CIM_ERR_NOT_FOUND") {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	iInstName = NewIndicationFilterInstName(localName)
+	fmt.Println("Deleting IndicationFilter...")
+	err = conn.DeleteInstance(iInstName)
+	if nil != err && false == strings.Contains(err.Error(), "6 - CIM_ERR_NOT_FOUND") {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	fmt.Println("Done!")
+}
+
+func CleanAllSubscriptions(destURL string) {
 	conn, err := gowbem.NewWBEMConn(destURL)
 	if nil != err {
 		fmt.Println(err.Error())
@@ -201,11 +231,18 @@ func DoSubscribeAndListen(urls string) {
 	ListenerThread(iLocalIP, iLocalPort)
 }
 
-func DoCleanSubscription(urls string) {
-	CleanSubscription(urls)
+func DoUnsubscriptionLocal(urls string) {
+	iDestAddr, _ := GetDestAddr(urls)
+	iLocalName, _ := GetHostName()
+	iLocalIP, _ := GetLocalIP(iDestAddr)
+	UnsubscribeLocal(urls, iLocalName, iLocalIP)
 }
 
-func DoListen(urls string) {
+func DoCleanAllSubscriptions(urls string) {
+	CleanAllSubscriptions(urls)
+}
+
+func DoJustListen(urls string) {
 	iDestAddr, _ := GetDestAddr(urls)
 	iLocalIP, _ := GetLocalIP(iDestAddr)
 	iLocalPort := 59988
@@ -214,11 +251,12 @@ func DoListen(urls string) {
 
 func Usage() {
 	fmt.Println("Usage:")
-	fmt.Println("  ", os.Args[0], "<-S|-L|-C> <scheme>://[<username>[:<passwd>]@]<host>[/<namespace>][:<port>]")
+	fmt.Println("  ", os.Args[0], "<-S|-L|-C|-U> <scheme>://[<username>[:<passwd>]@]<host>[/<namespace>][:<port>]")
 	fmt.Println("Examples:")
 	fmt.Println("  Subscribe and listen indications: ", os.Args[0], "-S http://USER:PASSWD@127.0.0.1/root/interop")
 	fmt.Println("  Just listen indications: ", os.Args[0], "-L https://USER:PASSWD@127.0.0.1/root/interop")
 	fmt.Println("  Clean all subscriptions: ", os.Args[0], "-C https://USER:PASSWD@127.0.0.1/root/interop")
+	fmt.Println("  Unsubscribe local subscriptions: ", os.Args[0], "-C https://USER:PASSWD@127.0.0.1/root/interop")
 	fmt.Println("")
 }
 
@@ -229,11 +267,13 @@ func main() {
 	}
 	switch os.Args[1] {
 	case "-L":
-		DoListen(os.Args[2])
+		DoJustListen(os.Args[2])
 	case "-C":
-		DoCleanSubscription(os.Args[2])
+		DoCleanAllSubscriptions(os.Args[2])
 	case "-S":
 		DoSubscribeAndListen(os.Args[2])
+	case "-U":
+		DoUnsubscriptionLocal(os.Args[2])
 	default:
 		Usage()
 		os.Exit(1)

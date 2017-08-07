@@ -61,6 +61,40 @@ func NewIndicationFilter(hostname, namespace string) *gowbem.Instance {
 	return &iInstance
 }
 
+func NewIndicationFilterInstName(hostname string) *gowbem.InstanceName {
+	iInstName := gowbem.InstanceName{
+		ClassName: "CIM_IndicationFilter",
+		KeyBinding: []gowbem.KeyBinding{
+			{
+				Name: "Name",
+				KeyValue: &gowbem.KeyValue{
+					Type:     "string",
+					KeyValue: "GoWbem:DefaultFilter",
+				},
+			}, {
+				Name: "CreationClassName",
+				KeyValue: &gowbem.KeyValue{
+					Type:     "string",
+					KeyValue: "CIM_IndicationFilter",
+				},
+			}, {
+				Name: "SystemName",
+				KeyValue: &gowbem.KeyValue{
+					Type:     "string",
+					KeyValue: hostname,
+				},
+			}, {
+				Name: "SystemCreationClassName",
+				KeyValue: &gowbem.KeyValue{
+					Type:     "string",
+					KeyValue: "CIM_ComputerSystem",
+				},
+			},
+		},
+	}
+	return &iInstName
+}
+
 func NewListenerDestination(hostname, ipaddr string, port int) *gowbem.Instance {
 	iInstance := gowbem.Instance{
 		ClassName: "CIM_ListenerDestinationCIMXML",
@@ -89,6 +123,40 @@ func NewListenerDestination(hostname, ipaddr string, port int) *gowbem.Instance 
 		},
 	}
 	return &iInstance
+}
+
+func NewListenerDestinationInstName(hostname, ipaddr string) *gowbem.InstanceName {
+	iInstName := gowbem.InstanceName{
+		ClassName: "CIM_ListenerDestinationCIMXML",
+		KeyBinding: []gowbem.KeyBinding{
+			{
+				Name: "SystemCreationClassName",
+				KeyValue: &gowbem.KeyValue{
+					Type:     "string",
+					KeyValue: "CIM_ComputerSystem",
+				},
+			}, {
+				Name: "SystemName",
+				KeyValue: &gowbem.KeyValue{
+					Type:     "string",
+					KeyValue: hostname,
+				},
+			}, {
+				Name: "CreationClassName",
+				KeyValue: &gowbem.KeyValue{
+					Type:     "string",
+					KeyValue: "CIM_ListenerDestinationCIMXML",
+				},
+			}, {
+				Name: "Name",
+				KeyValue: &gowbem.KeyValue{
+					Type:     "string",
+					KeyValue: fmt.Sprintf("GoWbem:%s", ipaddr),
+				},
+			},
+		},
+	}
+	return &iInstName
 }
 
 func NewIndicationSubscription(hostname, namespace, ipaddr string, port int) *gowbem.Instance {
@@ -188,4 +256,100 @@ func NewIndicationSubscription(hostname, namespace, ipaddr string, port int) *go
 		},
 	}
 	return &iInstance
+}
+
+func NewIndicationSubscriptionInstName(hostname, namespace, ipaddr string) *gowbem.InstanceName {
+	ns := []gowbem.Namespace{}
+	for _, sub := range strings.Split(namespace, "/") {
+		ns = append(ns, gowbem.Namespace{Name: sub})
+	}
+	iInstName := gowbem.InstanceName{
+		ClassName: "CIM_IndicationSubscription",
+		KeyBinding: []gowbem.KeyBinding{
+			{
+				Name: "Handler",
+				ValueReference: &gowbem.ValueReference{
+					LocalInstancePath: &gowbem.LocalInstancePath{
+						LocalNamespacePath: &gowbem.LocalNamespacePath{ns},
+						InstanceName: &gowbem.InstanceName{
+							ClassName: "CIM_ListenerDestinationCIMXML",
+							KeyBinding: []gowbem.KeyBinding{
+								{
+									Name: "SystemCreationClassName",
+									KeyValue: &gowbem.KeyValue{
+										ValueType: "string",
+										Type:      "string",
+										KeyValue:  "CIM_ComputerSystem",
+									},
+								}, {
+									Name: "SystemName",
+									KeyValue: &gowbem.KeyValue{
+										ValueType: "string",
+										Type:      "string",
+										KeyValue:  hostname,
+									},
+								}, {
+									Name: "CreationClassName",
+									KeyValue: &gowbem.KeyValue{
+										ValueType: "string",
+										Type:      "string",
+										KeyValue:  "CIM_ListenerDestinationCIMXML",
+									},
+								}, {
+									Name: "Name",
+									KeyValue: &gowbem.KeyValue{
+										ValueType: "string",
+										Type:      "string",
+										KeyValue:  fmt.Sprintf("GoWbem:%s", ipaddr),
+									},
+								},
+							},
+						},
+					},
+				},
+			}, {
+				Name: "Filter",
+				ValueReference: &gowbem.ValueReference{
+					LocalInstancePath: &gowbem.LocalInstancePath{
+						LocalNamespacePath: &gowbem.LocalNamespacePath{ns},
+						InstanceName: &gowbem.InstanceName{
+							ClassName: "CIM_IndicationFilter",
+							KeyBinding: []gowbem.KeyBinding{
+								{
+									Name: "SystemCreationClassName",
+									KeyValue: &gowbem.KeyValue{
+										ValueType: "string",
+										Type:      "string",
+										KeyValue:  "CIM_ComputerSystem",
+									},
+								}, {
+									Name: "SystemName",
+									KeyValue: &gowbem.KeyValue{
+										ValueType: "string",
+										Type:      "string",
+										KeyValue:  hostname,
+									},
+								}, {
+									Name: "CreationClassName",
+									KeyValue: &gowbem.KeyValue{
+										ValueType: "string",
+										Type:      "string",
+										KeyValue:  "CIM_IndicationFilter",
+									},
+								}, {
+									Name: "Name",
+									KeyValue: &gowbem.KeyValue{
+										ValueType: "string",
+										Type:      "string",
+										KeyValue:  "GoWbem:DefaultFilter",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	return &iInstName
 }
