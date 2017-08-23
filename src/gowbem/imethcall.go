@@ -120,7 +120,7 @@ func (iMethCall *IMethodCall) appendParamVal(paramName string, param interface{}
 	}
 }
 
-func (conn *WBEMConnection) doPostMethodCall(method string, content []byte) ([]byte, error) {
+func (conn *WBEMConnection) doPostIMethodCall(method string, content []byte) ([]byte, error) {
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s://%s:%d/%s", conn.scheme, conn.host, conn.port, DefaultRequestURI), bytes.NewReader(content))
 	if nil != err {
 		return nil, err
@@ -164,7 +164,7 @@ func (conn *WBEMConnection) iMethodCall(call *IMethodCall) (*IMethodResponse, er
 		return nil, err
 	}
 	raw = append([]byte(xml.Header), raw...)
-	raw, err = conn.doPostMethodCall(call.Name, raw)
+	raw, err = conn.doPostIMethodCall(call.Name, raw)
 	if nil != err {
 		return nil, err
 	}

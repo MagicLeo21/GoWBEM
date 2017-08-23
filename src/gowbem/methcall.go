@@ -18,7 +18,11 @@
 package gowbem
 
 import (
+	"bytes"
 	"encoding/xml"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strings"
 )
 
@@ -48,10 +52,70 @@ func (methCall *MethodCall) appendLocalInstancePath(namespace string, instanceNa
 	}
 }
 
+func (methCall *MethodCall) getObjectPathString() string {
+	obj := ""
+	if nil != methCall.LocalClassPath &&
+		nil != methCall.LocalClassPath.ClassName &&
+		nil != methCall.LocalClassPath.LocalNamespacePath {
+		for i, ns := range methCall.LocalClassPath.LocalNamespacePath.Namespace {
+			if 0 == i {
+				obj += fmt.Sprintf("%s", ns.Name)
+			} else {
+				obj += fmt.Sprintf("/%s", ns.Name)
+			}
+		}
+		obj += fmt.Sprintf(":%s", methCall.LocalClassPath.ClassName.Name)
+	} else if nil != methCall.LocalInstancePath &&
+		nil != methCall.LocalInstancePath.InstanceName &&
+		nil != methCall.LocalInstancePath.LocalNamespacePath {
+		for i, ns := range methCall.LocalInstancePath.LocalNamespacePath.Namespace {
+			if 0 == i {
+				obj += fmt.Sprintf("%s", ns.Name)
+			} else {
+				obj += fmt.Sprintf("/%s", ns.Name)
+			}
+		}
+		obj += fmt.Sprintf(":%s", methCall.LocalInstancePath.InstanceName.ClassName)
+		for i, key := range methCall.LocalInstancePath.InstanceName.KeyBinding {
+			if 0 == i {
+				obj += fmt.Sprintf(".%s=\"%s\"", key.Name, key.KeyValue.KeyValue)
+			} else {
+				obj += fmt.Sprintf(",%s=\"%s\"", key.Name, key.KeyValue.KeyValue)
+			}
+		}
+	}
+	return obj
+}
+
+func (conn *WBEMConnection) doPostMethodCall(method string, object string, content []byte) ([]byte, error) {
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s://%s:%d/%s", conn.scheme, conn.host, conn.port, DefaultRequestURI), bytes.NewReader(content))
+	if nil != err {
+		return nil, err
+	}
+	req.SetBasicAuth(conn.username, conn.password)
+	req.Header.Add("Content-Type", "application/xml; charset=\"utf-8\"")
+	req.Header.Add("Host", fmt.Sprintf("%s:%d", conn.host, conn.port))
+	req.Header.Add("Accept-Encoding", "identity")
+	req.Header["TE"] = append(req.Header["TE"], "trailers")
+	req.Header[HttpHdrOperation] = append(req.Header[HttpHdrOperation], "MethodCall")
+	req.Header[HttpHdrMethod] = append(req.Header[HttpHdrMethod], method)
+	req.Header[HttpHdrObject] = append(req.Header[HttpHdrObject], object)
+	res, err := conn.httpc.Do(req)
+	if nil != err {
+		return nil, err
+	}
+	if 200 != res.StatusCode {
+		err = fmt.Errorf("HTTP_ERR - %d - %s", res.StatusCode, res.Status)
+		return nil, err
+	}
+	return ioutil.ReadAll(res.Body)
+}
+
 func (conn *WBEMConnection) methodCall(call *MethodCall) (*MethodResponse, error) {
 	if nil == call {
 		return nil, conn.oops(ErrFailed, "")
 	}
+
 	var cim CIM = CIM{
 		CIMVersion: "2.0",
 		DTDVersion: "2.0",
@@ -67,7 +131,7 @@ func (conn *WBEMConnection) methodCall(call *MethodCall) (*MethodResponse, error
 		return nil, err
 	}
 	raw = append([]byte(xml.Header), raw...)
-	raw, err = conn.doPostMethodCall(call.Name, raw)
+	raw, err = conn.doPostMethodCall(call.Name, call.getObjectPathString(), raw)
 	if nil != err {
 		return nil, err
 	}
