@@ -406,6 +406,7 @@ func GetLocalIP(dest string) (string, error) {
 
 func ListenerHandler(writer http.ResponseWriter, req *http.Request) {
 	body, _ := ioutil.ReadAll(req.Body)
+	req.Body.Close()
 	cim := gowbem.CIM{}
 	err := xml.Unmarshal(body, &cim)
 	if nil == err {

@@ -104,6 +104,7 @@ func (conn *WBEMConnection) doPostMethodCall(method string, object string, conte
 	if nil != err {
 		return nil, err
 	}
+	defer res.Body.Close()
 	if 200 != res.StatusCode {
 		err = fmt.Errorf("HTTP_ERR - %d - %s", res.StatusCode, res.Status)
 		return nil, err
