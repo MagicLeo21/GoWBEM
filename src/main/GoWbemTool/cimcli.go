@@ -436,7 +436,7 @@ func ListenerHandler(writer http.ResponseWriter, req *http.Request) {
 func usage() {
 	base := filepath.Base(os.Args[0])
 	fmt.Println("Usage:")
-	fmt.Printf("    %s -o <action> [-u <url>] [-c <class>]\n", base)
+	fmt.Printf("    %s -o <action> [-u <url>] [-c <class>] [-t <timeout>]\n", base)
 	fmt.Printf("<url>:\n")
 	fmt.Printf("    <scheme>://[<username>[:<passwd>]@]<host>[:<port>][/<namespace>]\n")
 	fmt.Printf("<act>:\n")
@@ -462,12 +462,13 @@ func main() {
 	url := flag.String("u", "", "")
 	cls := flag.String("c", "", "")
 	opt := flag.String("o", "", "")
+	to := flag.Int("t", 120, "")
 	flag.Parse()
 	cli := NewClient(*url)
 	if nil == cli || nil == MethMap[*opt] {
 		usage()
 	} else {
-		cli.conn.SetHttpTimeout(time.Millisecond * 5000)
+		cli.conn.SetHttpTimeout(time.Second * time.Duration(*to))
 		res, err := MethMap[*opt](cli, *cls)
 		if nil != err {
 			log.Println("Error:", err.Error())
