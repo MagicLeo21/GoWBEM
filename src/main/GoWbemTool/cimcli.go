@@ -60,6 +60,15 @@ func NewClient(url string) *Client {
 	return &Client{conn}
 }
 
+func (cli *Client) ExecQuery(query string, queryLanguage string) ([]byte, error) {
+	instance, err := cli.conn.ExecQuery( queryLanguage, query )
+	if nil != err {
+		return nil, err
+	}
+	res, _ := json.MarshalIndent( &instance, "", "    " )
+	return res, nil
+}
+
 func (cli *Client) GetClass(className string) ([]byte, error) {
 	var iClassName gowbem.ClassName = gowbem.ClassName{
 		Name: className,
@@ -437,6 +446,7 @@ func usage() {
 	base := filepath.Base(os.Args[0])
 	fmt.Println("Usage:")
 	fmt.Printf("    %s -o <action> [-u <url>] [-c <class>] [-t <timeout>]\n", base)
+	fmt.Printf("    %s -o exq -q <WqlQuery> [-ql <QueryLang>] [-u <url>] [-t <timeout>]\n", base)
 	fmt.Printf("<url>:\n")
 	fmt.Printf("    <scheme>://[<username>[:<passwd>]@]<host>[:<port>][/<namespace>]\n")
 	fmt.Printf("<act>:\n")
@@ -462,12 +472,27 @@ func main() {
 	url := flag.String("u", "", "")
 	cls := flag.String("c", "", "")
 	opt := flag.String("o", "", "")
-	to := flag.Int("t", 120, "")
+	to  := flag.Int("t", 120, "")
+	qlang := flag.String("ql", "WQL", "")
+	query := flag.String("q", "", "")
+
 	flag.Parse()
 	cli := NewClient(*url)
-	if nil == cli || nil == MethMap[*opt] {
+	if nil == cli {
+	    usage()
+	} else if "exq" == *opt && "" != *query {
+		cli.conn.SetHttpTimeout(time.Second * time.Duration(*to))
+		res, err := (*cli).ExecQuery(*query, *qlang)
+		if nil != err {
+			log.Println("Error:", err.Error())
+		} else if nil != res {
+			fmt.Println(string(res))
+		}
+	} else if nil == MethMap[*opt] {
+		// not in the method map, which is only for actions that have a class parameter
 		usage()
 	} else {
+		// the action is in the method map (for actions that take a class parameter)
 		cli.conn.SetHttpTimeout(time.Second * time.Duration(*to))
 		res, err := MethMap[*opt](cli, *cls)
 		if nil != err {
